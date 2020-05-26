@@ -1,6 +1,6 @@
 import { listenAndServe } from 'https://deno.land/std/http/server.ts';
 import { acceptWebSocket, acceptable } from "https://deno.land/std/ws/mod.ts";
-import { chat, login } from "./chat.ts";
+import { chat } from "./chat.ts";
 
 listenAndServe({port: 3000}, async (req) => {
     if(req.method === 'GET' && req.url === '/') {
