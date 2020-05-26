@@ -10,7 +10,7 @@ for Linux :
 for windows :
 ### `scoop install deno`
 ou
-### `choco install deno ``
+### `choco install deno `
 ou
 ### `iwr https://deno.land/x/install/install.ps1 -useb | iex`
 then:
