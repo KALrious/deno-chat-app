@@ -29,12 +29,12 @@ resource "aws_ecs_cluster" "chat_app_cluster" {
 }
 
 
-resource "aws_ecs_task_definition" "chat_app_task" {
-  family                   = "chat_app_task" # Naming our first task
+resource "aws_ecs_task_definition" "my_chat_app_task" {
+  family                   = "my_chat_app_task" # Naming our first task
   container_definitions    = <<DEFINITION
   [
     {
-      "name": "chat_app_task",
+      "name": "my_chat_app_task",
       "image": "${aws_ecr_repository.chat_app_ecr_repo.repository_url}",
       "essential": true,
       "portMappings": [
@@ -77,7 +77,7 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
 }
 
 resource "aws_alb" "application_load_balancer" {
-  name               = "chat_app_lb" # Naming our load balancer
+  name               = "chatappLb" # Naming our load balancer
   load_balancer_type = "application"
   subnets = [ # Referencing the default subnets
     "${aws_default_subnet.default_subnet_a.id}",
@@ -106,7 +106,7 @@ resource "aws_security_group" "load_balancer_security_group" {
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = "chat_app_target-group"
+  name        = "chatappTargetGroup"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -126,13 +126,13 @@ resource "aws_lb_listener" "listener" {
 resource "aws_ecs_service" "chat_app_service" {
   name            = "chat_app_service"                             # Naming our first service
   cluster         = "${aws_ecs_cluster.chat_app_cluster.id}"             # Referencing our created Cluster
-  task_definition = "${aws_ecs_task_definition.chat_app_task.arn}" # Referencing the task our service will spin up
+  task_definition = "${aws_ecs_task_definition.my_chat_app_task.arn}" # Referencing the task our service will spin up
   launch_type     = "FARGATE"
   desired_count   = 3 # Setting the number of containers to 3
 
   load_balancer {
     target_group_arn = "${aws_lb_target_group.target_group.arn}" # Referencing our target group
-    container_name   = "${aws_ecs_task_definition.chat_app_task.family}"
+    container_name   = "${aws_ecs_task_definition.my_chat_app_task.family}"
     container_port   = 3000 # Specifying the container port
   }
 
@@ -142,7 +142,6 @@ resource "aws_ecs_service" "chat_app_service" {
     security_groups  = ["${aws_security_group.service_security_group.id}"] # Setting the security group
   }
 }
-
 
 resource "aws_security_group" "service_security_group" {
   ingress {
